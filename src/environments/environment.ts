@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiEndPoint : 'http://localhost/xploredeliveryapi/api/'
+  apiEndPoint : 'http://190.4.56.14/xploredeliveryapi/api/'
 };
 
 /*
