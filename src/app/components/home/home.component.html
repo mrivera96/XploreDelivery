@@ -1,0 +1,283 @@
+<div class="card shadow mt-5">
+  <div class="card-header xplore-bg text-white">
+    Solicita tu servicio Delivery
+  </div>
+
+  <!--CARD BODY START-->
+  <div class="card-body">
+    <h5 class="card-title">Ingresa tus datos en el siguiente formulario</h5>
+
+    <div class="row"*ngIf="loading">
+      <div class="col text-center">
+        <img src="/XploreDelivery/assets/img/loading.svg" width="50%" alt="loading">
+      </div>
+    </div>
+    <!--FORM START-->
+    <form *ngIf="!loading" [formGroup]="this.deliveryForm" role="form" (ngSubmit)="onFormSubmit()">
+      <!--DELIVERY HEADER GROUP START-->
+      <div class="form-group " formGroupName="deliveryHeader">
+        <div class="form-row">
+          <div class="col-md-4">
+            <label for="nombre">Nombre Completo:</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-id-card"></i>
+                </span>
+              </div>
+              <input class="form-control" formControlName="nomCliente" id="nomCliente" required
+                placeholder="Ingresa tu nombre">         
+            </div>
+
+          </div>
+
+          <div class="col-md-4">
+            <label for="nId">Número de identida / RTN:</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-id-card"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control" id="numIdentificacion" required    
+                placeholder="Ingresa tu número de identificación ó RTN" formControlName="numIdentificacion">
+      
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label for="nCel">Número de celular:</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-phone-alt"></i>
+                </span>
+              </div>
+              <input type="tel" class="form-control" id="numCelular" required placeholder="Ingresa tu número de celular"
+                formControlName="numCelular">
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-row">
+          <div class="col-md-4">
+            <label for="fecha">Fecha:</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-calendar-alt"></i>
+                </span>
+              </div>
+              <input formControlName="fecha" type="date" class="form-control" id="fecha" required>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label for="dirRecogida">Direccion de recogida:</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-map-marker-alt"></i>
+                </span>
+              </div>
+              <textarea class="form-control" id="dirRecogida" required formControlName="dirRecogida"
+                placeholder="Ingresa la dirección donde recogeremos tu pedido"></textarea>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label for="email">Correo Electrónico:</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-at"></i>
+                </span>
+              </div>
+              <input type="email" formControlName="email" class="form-control" id="email" required
+                placeholder="Ingresa tu correo electrónico">
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-md-4">
+            <label for="idCategoria">Categoría a reservar:</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-car"></i>
+                </span>
+              </div>
+
+              <select id="idCategoria" formControlName="idCategoria" class="form-control" id="categoriaReserva"
+                required>
+                <option [ngValue]="null">-Seleccione una categoría-</option>
+                <option *ngFor="let category of categories" value="{{category.idTipoVehiculo}}">
+                  {{category.descTipoVehiculo}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--DELIVERY HEADER GROUP END-->
+      <hr>
+      <!--DELIVERY DETAIL GROUP START-->
+
+      <!--ORDER ADD FORM START-->
+      <div class="form-row">
+        <div class="col-md-6">
+          <label><strong>Detalles de entregas / envíos:</strong> </label>
+        </div>
+
+        <div class="col-md-6">
+          <button (click)="onOrderAdd()" [disabled]="!this.deliveryForm.valid"
+            class="btn btn-outline-success float-right">Agregar
+            entrega</button>
+        </div>
+      </div>
+
+
+      <div class="form-group" formGroupName="orders">
+        <div class="form-row">
+          <div class="col-md-6 ">
+            <label class="col-form-label" for="nFactura">N° Factura o detalle de envío:</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-money-bill"></i>
+                </span>
+              </div>
+              <input type="text" formControlName="nFactura" class="form-control" id="nFactura" required
+                placeholder="Detalle de envío">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="col-form-label" for="nomDestinatario">Nombre del destinatario:</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-user"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control" formControlName="nomDestinatario" id="nomDestinatario" required
+                placeholder="Ingresa el nombre del destinatario">
+            </div>
+          </div>
+
+
+        </div>
+
+        <div class="form-row">
+
+
+          <div class="col-md-6">
+            <label class="col-form-label" for="numCel">Número celular del destinatario:</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-phone"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control" id="numCel" formControlName="numCel" required
+                placeholder="Número celular del destinatario">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="col-form-label" for="direccion">Dirección del destinatario:</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-map-marker-alt"></i>
+                </span>
+              </div>
+              <textarea type="text" class="form-control" formControlName="direccion" id="direccion" required
+                placeholder="Dirección del destinatario"></textarea>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div *ngIf="agregado" class="alert alert-success" role="alert">
+        Se agregó correctamente
+      </div>
+      <!--ORDER ADD FORM END-->
+      <hr>
+
+      <!--ORDERS TABLE START-->
+      <div class="form-row mx-auto">
+        <label><strong>Entregas programadas:</strong> </label>
+      </div>
+      <div class="form-row">
+        <table class="table table-responsive-lg table-striped">
+          <thead>
+            <th scope="col">N°</th>
+            <th scope="col">N° de Factura o Detalle de Envío</th>
+            <th scope="col">Nombre del Destinatario</th>
+            <th scope="col">Número Celular del Destinatario</th>
+            <th scope="col">Dirección del Destinatario</th>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let order of orders; let i = index">
+              <td scope="row">{{i+1}}</td>
+              <td>{{order.nFactura}}</td>
+              <td>{{order.nomDestinatario}}</td>
+              <td>{{order.numCel}}</td>
+              <td>{{order.direccion}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+      <!--ORDERS TABLE START-->
+
+      <div class="form-row">
+        <button type="submit" [disabled]="this.orders.length == 0" class="btn btn-outline-primary">Solicitar</button>
+      </div>
+
+    </form>
+  </div>
+  <button id="showSuccsModal" type="button" data-toggle="modal" data-target="#succsModal" hidden></button>
+  <button id="showErrModal" type="button" data-toggle="modal" data-target="#errModal" hidden></button>
+</div>
+
+<!-- INICIO DE MODAL -->
+<div id="succsModal" class="modal" tabindex="-1" role="dialog" >
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Solicitud Xplore Delivery</h5>
+      </div>
+      <div class="modal-body">
+        <p>{{this.exitMsg}}</p>
+        <p><strong>Tu número de solicitud es: N° {{nDeliveryResponse}}</strong></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- FIN DE MODAL -->
+
+
+<!-- INICIO DE MODAL -->
+<div id="errModal" class="modal" tabindex="-1" role="dialog" >
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Ha ocurrido un error</h5>
+      </div>
+      <div class="modal-body">
+        <p>Lo sentimos, ha ocurrido un error al procesar tu solicitud. Por favor intenta de nuevo.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- FIN DE MODAL -->
