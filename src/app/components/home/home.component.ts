@@ -35,18 +35,19 @@ export class HomeComponent implements OnInit {
     this.deliveryForm = this.formBuilder.group({
       deliveryHeader:  this.formBuilder.group({
         nomCliente: ['', Validators.required],
-        numIdentificacion: ['', Validators.required],
-        numCelular: ['', Validators.required],
+        numIdentificacion: ['', [Validators.required, Validators.maxLength(14), Validators.minLength(13)]],
+        numCelular: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(9)]],
         fecha: [formatDate(new Date, 'yyyy-MM-dd', 'en'), Validators.required],
+        hora: [formatDate(new Date, 'hh:mm', 'en'), Validators.required],
         dirRecogida: ['', Validators.required],
-        email: ['', Validators.required],
+        email: ['', [Validators.required,  Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$")]],
         idCategoria: [null, Validators.required],
       }),
      
       orders: this.formBuilder.group({
         nFactura: ['', Validators.required],
         nomDestinatario: ['', Validators.required],
-        numCel: ['', Validators.required],
+        numCel: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(9)]],
         direccion: ['', Validators.required]
       })
     });

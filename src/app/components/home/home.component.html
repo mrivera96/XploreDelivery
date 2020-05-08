@@ -7,9 +7,9 @@
   <div class="card-body">
     <h5 class="card-title">Ingresa tus datos en el siguiente formulario</h5>
 
-    <div class="row"*ngIf="loading">
+    <div class="row" *ngIf="loading">
       <div class="col text-center">
-        <img src="/XploreDelivery/assets/img/loading.svg" width="50%" alt="loading">
+        <img src="/XploreDelivery/assets/img/loading.svg" width="40%" alt="loading">
       </div>
     </div>
     <!--FORM START-->
@@ -25,9 +25,13 @@
                   <i class="fa fa-id-card"></i>
                 </span>
               </div>
-              <input class="form-control" formControlName="nomCliente" id="nomCliente" required
-                placeholder="Ingresa tu nombre">         
+              <input class="form-control" formControlName="nomCliente" id="nomCliente"
+                [class.is-invalid]=" deliveryForm.get('deliveryHeader').get('nomCliente').invalid && deliveryForm.get('deliveryHeader').get('nomCliente').touched"
+                placeholder="Ingresa tu nombre">
             </div>
+            <small
+              *ngIf="deliveryForm.get('deliveryHeader').get('nomCliente').errors?.required &&  deliveryForm.get('deliveryHeader').get('nomCliente').touched"
+              class="text-danger">*Este campo es obligatorio</small>
 
           </div>
 
@@ -39,10 +43,21 @@
                   <i class="fa fa-id-card"></i>
                 </span>
               </div>
-              <input type="text" class="form-control" id="numIdentificacion" required    
+              <input type="text" minlength="13" maxlength="14" class="form-control" id="numIdentificacion" required
+                [class.is-invalid]="deliveryForm.get('deliveryHeader').get('numIdentificacion').invalid && deliveryForm.get('deliveryHeader').get('numIdentificacion').touched"
                 placeholder="Ingresa tu número de identificación ó RTN" formControlName="numIdentificacion">
-      
+
             </div>
+            <small
+              *ngIf="deliveryForm.get('deliveryHeader').get('numIdentificacion').errors?.required && deliveryForm.get('deliveryHeader').get('numIdentificacion').touched"
+              class="text-danger">*Este campo es obligatorio</small>
+            <small
+              *ngIf="deliveryForm.get('deliveryHeader').get('numIdentificacion').errors?.maxlength && deliveryForm.get('deliveryHeader').get('numIdentificacion').touched"
+              class="text-danger">*Por favor ingresa tu número de identificación sin espacios ni guiones</small>
+            <small
+              *ngIf="deliveryForm.get('deliveryHeader').get('numIdentificacion').errors?.minlength && deliveryForm.get('deliveryHeader').get('numIdentificacion').touched"
+              class="text-danger">*Por favor ingresa tu número de identificación sin espacios ni guiones</small>
+
           </div>
 
           <div class="col-md-4">
@@ -53,16 +68,26 @@
                   <i class="fa fa-phone-alt"></i>
                 </span>
               </div>
-              <input type="tel" class="form-control" id="numCelular" required placeholder="Ingresa tu número de celular"
-                formControlName="numCelular">
+              <input appPhoneMask type="tel" minlength="9" maxlength="9" class="form-control" id="numCelular" required
+                placeholder="Ingresa tu número de celular" formControlName="numCelular"
+                [class.is-invalid]="deliveryForm.get('deliveryHeader').get('numCelular').invalid && deliveryForm.get('deliveryHeader').get('numCelular').touched">
             </div>
+            <small
+              *ngIf="deliveryForm.get('deliveryHeader').get('numCelular').errors?.required && deliveryForm.get('deliveryHeader').get('numCelular').touched"
+              class="text-danger">*Este campo es obligatorio</small>
+            <small
+              *ngIf="deliveryForm.get('deliveryHeader').get('numCelular').errors?.maxlength && deliveryForm.get('deliveryHeader').get('numCelular').touched"
+              class="text-danger">*Por favor ingresa un número válido</small>
+            <small
+              *ngIf="deliveryForm.get('deliveryHeader').get('numCelular').errors?.minlength && deliveryForm.get('deliveryHeader').get('numCelular').touched"
+              class="text-danger">*Por favor ingresa un número válido</small>
           </div>
 
         </div>
 
         <div class="form-row">
           <div class="col-md-4">
-            <label for="fecha">Fecha:</label>
+            <label for="fecha">Fecha de recogida:</label>
             <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text">
@@ -70,6 +95,18 @@
                 </span>
               </div>
               <input formControlName="fecha" type="date" class="form-control" id="fecha" required>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label for="hora">Hora de recogida:</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-calendar-alt"></i>
+                </span>
+              </div>
+              <input formControlName="hora" type="time" class="form-control" id="hora" required>
             </div>
           </div>
 
@@ -82,9 +119,19 @@
                 </span>
               </div>
               <textarea class="form-control" id="dirRecogida" required formControlName="dirRecogida"
+                [class.is-invalid]="deliveryForm.get('deliveryHeader').get('dirRecogida').invalid && deliveryForm.get('deliveryHeader').get('dirRecogida').touched"
                 placeholder="Ingresa la dirección donde recogeremos tu pedido"></textarea>
             </div>
+            <small
+              *ngIf="deliveryForm.get('deliveryHeader').get('dirRecogida').errors?.required&& deliveryForm.get('deliveryHeader').get('dirRecogida').touched"
+              class="text-danger">*Este campo es obligatorio</small>
+
           </div>
+
+
+        </div>
+
+        <div class="form-row">
 
           <div class="col-md-4">
             <label for="email">Correo Electrónico:</label>
@@ -95,11 +142,18 @@
                 </span>
               </div>
               <input type="email" formControlName="email" class="form-control" id="email" required
-                placeholder="Ingresa tu correo electrónico">
+                pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" placeholder="Ingresa tu correo electrónico"
+                [class.is-invalid]="deliveryForm.get('deliveryHeader').get('email').invalid && deliveryForm.get('deliveryHeader').get('email').touched">
+
             </div>
+            <small
+              *ngIf="deliveryForm.get('deliveryHeader').get('email').errors?.required && deliveryForm.get('deliveryHeader').get('email').touched"
+              class="text-danger">*Este campo es obligatorio</small>
+            <small
+              *ngIf="deliveryForm.get('deliveryHeader').get('email').errors?.pattern && deliveryForm.get('deliveryHeader').get('email').touched"
+              class="text-danger">Por favor ingresa un email válido</small>
           </div>
-        </div>
-        <div class="form-row">
+
           <div class="col-md-4">
             <label for="idCategoria">Categoría a reservar:</label>
             <div class="input-group">
@@ -109,14 +163,19 @@
                 </span>
               </div>
 
-              <select id="idCategoria" formControlName="idCategoria" class="form-control" id="categoriaReserva"
-                required>
-                <option [ngValue]="null">-Seleccione una categoría-</option>
+              <select id="idCategoria" formControlName="idCategoria" class="form-control" id="categoriaReserva" required
+                [class.is-invalid]="deliveryForm.get('deliveryHeader').get('idCategoria').invalid && deliveryForm.get('deliveryHeader').get('idCategoria').touched">
+                <option [ngValue]="null">-Selecciona una categoría-</option>
                 <option *ngFor="let category of categories" value="{{category.idTipoVehiculo}}">
                   {{category.descTipoVehiculo}}</option>
               </select>
             </div>
+            <small
+              *ngIf="deliveryForm.get('deliveryHeader').get('idCategoria').errors?.required && deliveryForm.get('deliveryHeader').get('idCategoria').touched"
+              class="text-danger">*Este campo es obligatorio</small>
+
           </div>
+
         </div>
       </div>
       <!--DELIVERY HEADER GROUP END-->
@@ -127,12 +186,6 @@
       <div class="form-row">
         <div class="col-md-6">
           <label><strong>Detalles de entregas / envíos:</strong> </label>
-        </div>
-
-        <div class="col-md-6">
-          <button (click)="onOrderAdd()" [disabled]="!this.deliveryForm.valid"
-            class="btn btn-outline-success float-right">Agregar
-            entrega</button>
         </div>
       </div>
 
@@ -148,8 +201,12 @@
                 </span>
               </div>
               <input type="text" formControlName="nFactura" class="form-control" id="nFactura" required
+                [class.is-invalid]="deliveryForm.get('orders').get('nFactura').invalid && deliveryForm.get('orders').get('nFactura').touched"
                 placeholder="Detalle de envío">
             </div>
+            <small
+              *ngIf="deliveryForm.get('orders').get('nFactura').errors?.required && deliveryForm.get('orders').get('nFactura').touched"
+              class="text-danger">*Este campo es obligatorio</small>
           </div>
 
           <div class="col-md-6">
@@ -161,15 +218,17 @@
                 </span>
               </div>
               <input type="text" class="form-control" formControlName="nomDestinatario" id="nomDestinatario" required
-                placeholder="Ingresa el nombre del destinatario">
+                placeholder="Ingresa el nombre del destinatario"
+                [class.is-invalid]="deliveryForm.get('orders').get('nomDestinatario').invalid && deliveryForm.get('orders').get('nomDestinatario').touched">
             </div>
+            <small
+              *ngIf="deliveryForm.get('orders').get('nomDestinatario').errors?.required && deliveryForm.get('orders').get('nomDestinatario').touched"
+              class="text-danger">*Este campo es obligatorio</small>
           </div>
-
 
         </div>
 
         <div class="form-row">
-
 
           <div class="col-md-6">
             <label class="col-form-label" for="numCel">Número celular del destinatario:</label>
@@ -179,9 +238,22 @@
                   <i class="fa fa-phone"></i>
                 </span>
               </div>
-              <input type="text" class="form-control" id="numCel" formControlName="numCel" required
+              <input type="text" class="form-control" id="numCel" formControlName="numCel" required minlength="9"
+                maxlength="9" appPhoneMask
+                [class.is-invalid]="deliveryForm.get('orders').get('numCel').invalid && deliveryForm.get('orders').get('numCel').touched"
                 placeholder="Número celular del destinatario">
+
             </div>
+            <small
+              *ngIf="deliveryForm.get('orders').get('numCel').errors?.maxlength && deliveryForm.get('orders').get('numCel').touched"
+              class="text-danger">*Por favor ingresa un número válido</small>
+            <small
+              *ngIf="deliveryForm.get('orders').get('numCel').errors?.minlength && deliveryForm.get('orders').get('numCel').touched"
+              class="text-danger">*Por favor ingresa un número válido</small>
+            <small
+              *ngIf="deliveryForm.get('orders').get('numCel').errors?.required && deliveryForm.get('orders').get('numCel').touched"
+              class="text-danger">*Este campo es obligatorio</small>
+
           </div>
 
           <div class="col-md-6">
@@ -193,10 +265,23 @@
                 </span>
               </div>
               <textarea type="text" class="form-control" formControlName="direccion" id="direccion" required
+                [class.is-invalid]="deliveryForm.get('orders').get('direccion').invalid && deliveryForm.get('orders').get('direccion').touched"
                 placeholder="Dirección del destinatario"></textarea>
             </div>
-          </div>
+            <small
+              *ngIf="deliveryForm.get('orders').get('direccion').errors?.required && deliveryForm.get('orders').get('direccion').touched"
+              class="text-danger">*Este campo es obligatorio</small>
 
+          </div>
+        </div>
+        <hr>
+        
+        <div class="form-row">
+          <div class="col-md-6">
+            <button (click)="onOrderAdd()" [disabled]="!this.deliveryForm.get('orders').valid"
+              class="btn btn-outline-success float-left">Agregar
+              entrega</button>
+          </div>
         </div>
       </div>
 
@@ -214,7 +299,7 @@
         <table class="table table-responsive-lg table-striped">
           <thead>
             <th scope="col">N°</th>
-            <th scope="col">N° de Factura o Detalle de Envío</th>
+            <th scope="col">N° de Factura / Detalle de Envío</th>
             <th scope="col">Nombre del Destinatario</th>
             <th scope="col">Número Celular del Destinatario</th>
             <th scope="col">Dirección del Destinatario</th>
@@ -235,7 +320,8 @@
       <!--ORDERS TABLE START-->
 
       <div class="form-row">
-        <button type="submit" [disabled]="this.orders.length == 0" class="btn btn-outline-primary">Solicitar</button>
+        <button type="submit" [disabled]="this.orders.length == 0" class="btn btn-outline-primary">Finalizar
+          orden</button>
       </div>
 
     </form>
@@ -245,7 +331,7 @@
 </div>
 
 <!-- INICIO DE MODAL -->
-<div id="succsModal" class="modal" tabindex="-1" role="dialog" >
+<div id="succsModal" class="modal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -265,7 +351,7 @@
 
 
 <!-- INICIO DE MODAL -->
-<div id="errModal" class="modal" tabindex="-1" role="dialog" >
+<div id="errModal" class="modal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
