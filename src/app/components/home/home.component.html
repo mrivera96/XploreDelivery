@@ -1,4 +1,4 @@
-<div class="card shadow mt-5">
+<div class="card shadow mt-5 mb-5">
   <div class="card-header xplore-bg text-white">
     Solicita tu servicio Delivery
   </div>
@@ -118,16 +118,18 @@
                   <i class="fa fa-map-marker-alt"></i>
                 </span>
               </div>
-              <textarea class="form-control" id="dirRecogida" required formControlName="dirRecogida"
+              
+              <textarea  class="form-control"
+                id="dirRecogida" required formControlName="dirRecogida"
                 [class.is-invalid]="deliveryForm.get('deliveryHeader').get('dirRecogida').invalid && deliveryForm.get('deliveryHeader').get('dirRecogida').touched"
-                placeholder="Ingresa la dirección donde recogeremos tu pedido"></textarea>
+                placeholder="Dirección donde recogeremos tu pedido"></textarea>
+              
             </div>
             <small
               *ngIf="deliveryForm.get('deliveryHeader').get('dirRecogida').errors?.required&& deliveryForm.get('deliveryHeader').get('dirRecogida').touched"
               class="text-danger">*Este campo es obligatorio</small>
 
           </div>
-
 
         </div>
 
@@ -264,7 +266,8 @@
                   <i class="fa fa-map-marker-alt"></i>
                 </span>
               </div>
-              <textarea type="text" class="form-control" formControlName="direccion" id="direccion" required
+              <textarea  type="text"
+                class="form-control" formControlName="direccion" id="direccion" required
                 [class.is-invalid]="deliveryForm.get('orders').get('direccion').invalid && deliveryForm.get('orders').get('direccion').touched"
                 placeholder="Dirección del destinatario"></textarea>
             </div>
@@ -275,7 +278,7 @@
           </div>
         </div>
         <hr>
-        
+
         <div class="form-row">
           <div class="col-md-6">
             <button (click)="onOrderAdd()" [disabled]="!this.deliveryForm.get('orders').valid"
@@ -312,6 +315,9 @@
               <td>{{order.nomDestinatario}}</td>
               <td>{{order.numCel}}</td>
               <td>{{order.direccion}}</td>
+              <td>
+                <button class="btn btn-outline-danger" (click)="removeFromArray(order)" ><i class="fa fa-trash-alt"></i> Quitar</button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -326,6 +332,7 @@
 
     </form>
   </div>
+  
   <button id="showSuccsModal" type="button" data-toggle="modal" data-target="#succsModal" hidden></button>
   <button id="showErrModal" type="button" data-toggle="modal" data-target="#errModal" hidden></button>
 </div>

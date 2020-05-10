@@ -4,4 +4,5 @@ export interface Order {
     nomDestinatario?: string;
     numCel?: string;
     direccion?: string;
+    distancia?: string;
 }
