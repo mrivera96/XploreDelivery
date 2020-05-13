@@ -14,6 +14,6 @@ export class CategoriesService {
   ) { }
 
   getAllCategories(){
-    return this.http.get<Response>(`${environment.apiEndPoint}categories/list`);
+    return this.http.get<Response>(`${environment.apiEndPoint}?function=getCategories`);
   }
 }

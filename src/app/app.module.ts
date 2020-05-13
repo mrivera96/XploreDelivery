@@ -6,14 +6,16 @@ import { AppComponent } from './app.component'
 import { HomeComponent } from './components/home/home.component'
 import { HttpClientModule } from '@angular/common/http'
 import {FormsModule, ReactiveFormsModule} from '@angular/forms'
-import { PhoneMaskDirective } from './phone-mask.directive'
+import { PhoneMaskDirective } from './phone-mask.directive';
+import { CardMaskDirective } from './card-mask.directive'
 
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    PhoneMaskDirective
+    PhoneMaskDirective,
+    CardMaskDirective
   ],
   exports: [
     PhoneMaskDirective
