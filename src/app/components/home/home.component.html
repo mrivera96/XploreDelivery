@@ -1,328 +1,389 @@
-<div class="card shadow mt-5 mb-5">
+<!-- CARD START -->
+<div class="card shadow-sm mt-5 mb-5">
+  <!-- CARD HEADER START -->
   <div class="card-header xplore-bg text-white">
     Solicita tu servicio Delivery
   </div>
+  <!-- CARD HEADER END -->
 
   <!--CARD BODY START-->
   <div class="card-body">
-    <h5 class="card-title">Ingresa tus datos en el siguiente formulario</h5>
-
-    <div class="row" *ngIf="loading">
-      <div class="col text-center">
-        <img src="assets/img/loading.svg" width="40%" alt="loading">
+    <!--HEADER BLOCK START-->
+    <div class="card-block">
+      <p class="card-title"><strong *ngIf="!loaders.loadingSubmit">Ingresa tus datos en el siguiente formulario</strong>
+        <strong *ngIf="loaders.loadingSubmit">Espera mientras procesamos tu solicitud, no cierres esta ventana.</strong></p>
+      <hr>
+      <div class="row" *ngIf="loaders.loadingSubmit">
+        <div class="col text-center">
+          <img src="assets/img/loading.svg" width="35%" alt="loading">
+          <p>Procesando información...</p>
+        </div>
       </div>
     </div>
-    <!--FORM START-->
-    <form *ngIf="!loading" [formGroup]="this.deliveryForm" role="form" (ngSubmit)="onFormSubmit()">
-      <!--DELIVERY HEADER GROUP START-->
-      <div class="form-group " formGroupName="deliveryHeader">
-        <div class="form-row">
-          <div class="col-md-4">
-            <label for="nomCliente">Nombre Completo:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
+
+    <!--HEADER BLOCK END-->
+
+    <!--DELIVERY FORM BLOCK START-->
+    <div class="card-block" *ngIf="!loaders.loadingSubmit">
+      <!--FORM START-->
+      <form  [formGroup]="deliveryForm" role="form" (ngSubmit)="onFormSubmit()">
+        <!--DELIVERY HEADER GROUP START-->
+        <div class="form-group " formGroupName="deliveryHeader">
+          <div class="form-row">
+            <div class="col-md-4">
+              <label for="nomCliente">Nombre Completo:</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-id-card"></i>
                 </span>
+                </div>
+                <input class="form-control" formControlName="nomCliente" id="nomCliente"
+                       [class.is-invalid]=" deliveryForm.get('deliveryHeader').get('nomCliente').invalid && deliveryForm.get('deliveryHeader').get('nomCliente').touched"
+                       placeholder="Ingresa tu nombre">
               </div>
-              <input class="form-control" formControlName="nomCliente" id="nomCliente"
-                     [class.is-invalid]=" deliveryForm.get('deliveryHeader').get('nomCliente').invalid && deliveryForm.get('deliveryHeader').get('nomCliente').touched"
-                     placeholder="Ingresa tu nombre">
+              <small
+                *ngIf="deliveryForm.get('deliveryHeader').get('nomCliente').errors?.required &&  deliveryForm.get('deliveryHeader').get('nomCliente').touched"
+                class="text-danger">*Este campo es obligatorio</small>
             </div>
-            <small
-              *ngIf="deliveryForm.get('deliveryHeader').get('nomCliente').errors?.required &&  deliveryForm.get('deliveryHeader').get('nomCliente').touched"
-              class="text-danger">*Este campo es obligatorio</small>
 
-          </div>
-
-          <div class="col-md-4">
-            <label for="numIdentificacion">Número de identida / RTN:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
+            <div class="col-md-4">
+              <label for="numIdentificacion">Número de identidad / RTN:</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-id-card"></i>
                 </span>
+                </div>
+                <input type="text" minlength="13" maxlength="14" class="form-control" id="numIdentificacion" required
+                       [class.is-invalid]="deliveryForm.get('deliveryHeader').get('numIdentificacion').invalid && deliveryForm.get('deliveryHeader').get('numIdentificacion').touched"
+                       placeholder="Número de identificación ó RTN" formControlName="numIdentificacion">
               </div>
-              <input type="text" minlength="13" maxlength="14" class="form-control" id="numIdentificacion" required
-                     [class.is-invalid]="deliveryForm.get('deliveryHeader').get('numIdentificacion').invalid && deliveryForm.get('deliveryHeader').get('numIdentificacion').touched"
-                     placeholder="Ingresa tu número de identificación ó RTN" formControlName="numIdentificacion">
-
+              <small
+                *ngIf="deliveryForm.get('deliveryHeader').get('numIdentificacion').errors?.required && deliveryForm.get('deliveryHeader').get('numIdentificacion').touched"
+                class="text-danger">*Este campo es obligatorio</small>
+              <small
+                *ngIf="deliveryForm.get('deliveryHeader').get('numIdentificacion').errors?.maxlength && deliveryForm.get('deliveryHeader').get('numIdentificacion').touched"
+                class="text-danger">*Por favor ingresa tu número de identificación sin espacios ni guiones</small>
+              <small
+                *ngIf="deliveryForm.get('deliveryHeader').get('numIdentificacion').errors?.minlength && deliveryForm.get('deliveryHeader').get('numIdentificacion').touched"
+                class="text-danger">*Por favor ingresa tu número de identificación sin espacios ni guiones</small>
             </div>
-            <small
-              *ngIf="deliveryForm.get('deliveryHeader').get('numIdentificacion').errors?.required && deliveryForm.get('deliveryHeader').get('numIdentificacion').touched"
-              class="text-danger">*Este campo es obligatorio</small>
-            <small
-              *ngIf="deliveryForm.get('deliveryHeader').get('numIdentificacion').errors?.maxlength && deliveryForm.get('deliveryHeader').get('numIdentificacion').touched"
-              class="text-danger">*Por favor ingresa tu número de identificación sin espacios ni guiones</small>
-            <small
-              *ngIf="deliveryForm.get('deliveryHeader').get('numIdentificacion').errors?.minlength && deliveryForm.get('deliveryHeader').get('numIdentificacion').touched"
-              class="text-danger">*Por favor ingresa tu número de identificación sin espacios ni guiones</small>
 
-          </div>
-
-          <div class="col-md-4">
-            <label for="numCelular">Número de celular:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
+            <div class="col-md-4">
+              <label for="numCelular">Número de celular:</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-phone-alt"></i>
                 </span>
+                </div>
+                <input appPhoneMask type="tel" minlength="9" maxlength="9" class="form-control" id="numCelular" required
+                       placeholder="Número celular sin espacios" formControlName="numCelular"
+                       [class.is-invalid]="deliveryForm.get('deliveryHeader').get('numCelular').invalid && deliveryForm.get('deliveryHeader').get('numCelular').touched">
               </div>
-              <input appPhoneMask type="tel" minlength="9" maxlength="9" class="form-control" id="numCelular" required
-                     placeholder="Ingresa tu número de celular" formControlName="numCelular"
-                     [class.is-invalid]="deliveryForm.get('deliveryHeader').get('numCelular').invalid && deliveryForm.get('deliveryHeader').get('numCelular').touched">
+              <small
+                *ngIf="deliveryForm.get('deliveryHeader').get('numCelular').errors?.required && deliveryForm.get('deliveryHeader').get('numCelular').touched"
+                class="text-danger">*Este campo es obligatorio</small>
+              <small
+                *ngIf="deliveryForm.get('deliveryHeader').get('numCelular').errors?.maxlength && deliveryForm.get('deliveryHeader').get('numCelular').touched"
+                class="text-danger">*Por favor ingresa un número válido</small>
+              <small
+                *ngIf="deliveryForm.get('deliveryHeader').get('numCelular').errors?.minlength && deliveryForm.get('deliveryHeader').get('numCelular').touched"
+                class="text-danger">*Por favor ingresa un número válido</small>
             </div>
-            <small
-              *ngIf="deliveryForm.get('deliveryHeader').get('numCelular').errors?.required && deliveryForm.get('deliveryHeader').get('numCelular').touched"
-              class="text-danger">*Este campo es obligatorio</small>
-            <small
-              *ngIf="deliveryForm.get('deliveryHeader').get('numCelular').errors?.maxlength && deliveryForm.get('deliveryHeader').get('numCelular').touched"
-              class="text-danger">*Por favor ingresa un número válido</small>
-            <small
-              *ngIf="deliveryForm.get('deliveryHeader').get('numCelular').errors?.minlength && deliveryForm.get('deliveryHeader').get('numCelular').touched"
-              class="text-danger">*Por favor ingresa un número válido</small>
           </div>
-        </div>
 
-        <div class="form-row">
-          <div class="col-md-4">
-            <label for="fecha">Fecha de recogida:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
+          <div class="form-row">
+            <div class="col-md-4">
+              <label for="fecha">Fecha de recogida:</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-calendar-alt"></i>
                 </span>
+                </div>
+                <input formControlName="fecha" type="date" class="form-control" id="fecha" required>
               </div>
-              <input formControlName="fecha" type="date" class="form-control" id="fecha" required>
             </div>
-          </div>
 
-          <div class="col-md-4">
-            <label for="hora">Hora de recogida:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
+            <div class="col-md-4">
+              <label for="hora">Hora de recogida:</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-calendar-alt"></i>
                 </span>
+                </div>
+                <input formControlName="hora" type="time" class="form-control" id="hora" required>
               </div>
-              <input formControlName="hora" type="time" class="form-control" id="hora" required>
             </div>
-          </div>
 
-          <div class="col-md-4">
-            <label for="dirRecogida">Direccion de recogida:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
+            <div class="col-md-4">
+              <label for="dirRecogida">Direccion de recogida:</label>
+
+              <div class="input-group">
+                <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-map-marker-alt"></i>
                 </span>
+                </div>
+
+                <input class="form-control" (input)="searchOrigin($event)" autocomplete="off"
+                       id="dirRecogida" required formControlName="dirRecogida"
+                       [class.is-invalid]="deliveryForm.get('deliveryHeader').get('dirRecogida').invalid && deliveryForm.get('deliveryHeader').get('dirRecogida').touched"
+                       placeholder="Donde recogeremos tu pedido">
+              </div>
+              <div class="suggestions" *ngIf="placesOrigin?.length">
+                <p *ngFor="let s of placesOrigin" (click)="setOrigin(s.text)">{{s.text}}</p>
+              </div>
+              <small> <a href="javascript:void(0)" (click)="gcordsOrigin=true">Ingresar Geocordenadas</a> </small>
+              <div class="input-group" *ngIf="gcordsOrigin">
+
+                <input #originCords class="form-control" type="text" placeholder=" Ej. 10.1508684, -87.61982">
+                <div class="input-group-append">
+                  <button class="btn btn-primary" (click)="setCordsOrigin()"> Ok</button>
+                </div>
               </div>
 
-              <input class="form-control" (input)="searchOrigin($event)" autocomplete="off"
-                     id="dirRecogida" required formControlName="dirRecogida"
-                     [class.is-invalid]="deliveryForm.get('deliveryHeader').get('dirRecogida').invalid && deliveryForm.get('deliveryHeader').get('dirRecogida').touched"
-                     placeholder="Dirección donde recogeremos tu pedido">
-            </div>
-            <div class="suggestions" *ngIf="placesOrigin?.length">
-              <p *ngFor="let s of placesOrigin" (click)="setOrigin(s.text)">{{s.text}}</p>
-            </div>
-            <small
-              *ngIf="deliveryForm.get('deliveryHeader').get('dirRecogida').errors?.required&& deliveryForm.get('deliveryHeader').get('dirRecogida').touched"
-              class="text-danger">*Este campo es obligatorio</small>
+              <br>
+              <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" (change)="setCurrentLocationOrg($event)"><small>Ubicación
+                  actual</small>
+                </label>
+              </div>
 
+              <small
+                *ngIf="deliveryForm.get('deliveryHeader').get('dirRecogida').errors?.required&& deliveryForm.get('deliveryHeader').get('dirRecogida').touched"
+                class="text-danger">*Este campo es obligatorio</small>
+            </div>
           </div>
-        </div>
 
-        <div class="form-row">
-
-          <div class="col-md-4">
-            <label for="email">Correo Electrónico:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
+          <div class="form-row">
+            <div class="col-md-6">
+              <label for="email">Correo Electrónico:</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-at"></i>
                 </span>
+                </div>
+                <input type="email" formControlName="email" class="form-control" id="email" required
+                       pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" placeholder="ejemplo@email.com"
+                       [class.is-invalid]="deliveryForm.get('deliveryHeader').get('email').invalid && deliveryForm.get('deliveryHeader').get('email').touched">
               </div>
-              <input type="email" formControlName="email" class="form-control" id="email" required
-                     pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" placeholder="Ingresa tu correo electrónico"
-                     [class.is-invalid]="deliveryForm.get('deliveryHeader').get('email').invalid && deliveryForm.get('deliveryHeader').get('email').touched">
+              <small
+                *ngIf="deliveryForm.get('deliveryHeader').get('email').errors?.required && deliveryForm.get('deliveryHeader').get('email').touched"
+                class="text-danger">*Este campo es obligatorio</small>
+              <small
+                *ngIf="deliveryForm.get('deliveryHeader').get('email').errors?.pattern && deliveryForm.get('deliveryHeader').get('email').touched"
+                class="text-danger">Por favor ingresa un email válido</small>
+            </div>
+
+            <div class="col-md-6">
+              <label class="col-form-label">Categoría a reservar:</label>
+              <br>
+              <div class="form-check form-check-inline" *ngFor="let category of categories; let  i = index">
+
+                <label class="form-check-label" [ngClass]="{'text-primary': category.idTipoVehiculo===deliveryForm.get('deliveryHeader').get('idCategoria').value}">
+                  <input (change)="calculatedistanceBefore()" class="form-check-input" [id]="category.idTipoVehiculo" formControlName="idCategoria"
+                         type="radio" [value]="category.idTipoVehiculo" hidden>
+                  <i class="fa"
+                        [ngClass]="{'fa-car': category.idTipoVehiculo == 1, 'fa-bus': category.idTipoVehiculo == 6, 'fas fa-truck-pickup': category.idTipoVehiculo == 3}"></i>
+                  {{category.descTipoVehiculo}}
+                </label>
+
+                <!--<select id="idCategoria" formControlName="idCategoria" class="form-control" id="categoriaReserva" required
+
+                        [class.is-invalid]="deliveryForm.get('deliveryHeader').get('idCategoria').invalid && deliveryForm.get('deliveryHeader').get('idCategoria').touched">
+                  <option [ngValue]="null">-Selecciona una categoría-</option>
+                  <option *ngFor="let category of categories" value="{{category.idTipoVehiculo}}">
+                    {{category.descTipoVehiculo}}</option>
+                </select>
+                <small
+                *ngIf="deliveryForm.get('deliveryHeader').get('idCategoria').errors?.required && deliveryForm.get('deliveryHeader').get('idCategoria').touched"
+                class="text-danger">*Este campo es obligatorio</small>-->
+              </div>
+
 
             </div>
-            <small
-              *ngIf="deliveryForm.get('deliveryHeader').get('email').errors?.required && deliveryForm.get('deliveryHeader').get('email').touched"
-              class="text-danger">*Este campo es obligatorio</small>
-            <small
-              *ngIf="deliveryForm.get('deliveryHeader').get('email').errors?.pattern && deliveryForm.get('deliveryHeader').get('email').touched"
-              class="text-danger">Por favor ingresa un email válido</small>
           </div>
 
-          <div class="col-md-4">
-            <label for="idCategoria">Categoría a reservar:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <i class="fa fa-car"></i>
-                </span>
-              </div>
-
-              <select id="idCategoria" formControlName="idCategoria" class="form-control" id="categoriaReserva" required
-
-                      [class.is-invalid]="deliveryForm.get('deliveryHeader').get('idCategoria').invalid && deliveryForm.get('deliveryHeader').get('idCategoria').touched">
-                <option [ngValue]="null">-Selecciona una categoría-</option>
-                <option *ngFor="let category of categories" value="{{category.idTipoVehiculo}}">
-                  {{category.descTipoVehiculo}}</option>
-              </select>
-            </div>
-            <small
-              *ngIf="deliveryForm.get('deliveryHeader').get('idCategoria').errors?.required && deliveryForm.get('deliveryHeader').get('idCategoria').touched"
-              class="text-danger">*Este campo es obligatorio</small>
-
-          </div>
         </div>
-      </div>
 
-      <hr>
-      <!--BILLING DETAILS start-->
-
-      <!--ORDER ADD FORM START-->
+        <!--DELIVERY HEADER GROUP END-->
 
 
-      <!--DELIVERY HEADER GROUP END-->
-      <hr>
-      <!--BILLING DETAILS END-->
-
-      <!--ORDER ADD FORM START-->
-      <div class="form-row">
-        <div class="col-md-6">
-          <label><strong>Detalles de entregas / envíos:</strong> </label>
-        </div>
-      </div>
-
-
-      <div class="form-group" formGroupName="orders">
+        <br>
+        <!--ORDER ADD FORM START-->
         <div class="form-row">
-          <div class="col-md-6 ">
-            <label class="col-form-label" for="nFactura">N° Factura o detalle de envío:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
+          <div class="col">
+            <p class="card-title"><strong>Detalles de entregas / envíos:</strong></p>
+            <hr>
+          </div>
+        </div>
+
+
+        <div class="form-group" formGroupName="orders">
+          <div class="form-row">
+            <div class="col-md-6">
+              <label class="col-form-label" for="nFactura">N° Factura o detalle de envío:</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-money-bill"></i>
                 </span>
+                </div>
+                <input type="text" formControlName="nFactura" class="form-control" id="nFactura" required
+                       [class.is-invalid]="deliveryForm.get('orders').get('nFactura').invalid && deliveryForm.get('orders').get('nFactura').touched"
+                       placeholder="Detalle de envío">
               </div>
-              <input type="text" formControlName="nFactura" class="form-control" id="nFactura" required
-                     [class.is-invalid]="deliveryForm.get('orders').get('nFactura').invalid && deliveryForm.get('orders').get('nFactura').touched"
-                     placeholder="Detalle de envío">
+              <small
+                *ngIf="deliveryForm.get('orders').get('nFactura').errors?.required && deliveryForm.get('orders').get('nFactura').touched"
+                class="text-danger">*Este campo es obligatorio</small>
             </div>
-            <small
-              *ngIf="deliveryForm.get('orders').get('nFactura').errors?.required && deliveryForm.get('orders').get('nFactura').touched"
-              class="text-danger">*Este campo es obligatorio</small>
-          </div>
 
-          <div class="col-md-6">
-            <label class="col-form-label" for="nomDestinatario">Nombre del destinatario:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
+            <div class="col-md-6">
+              <label class="col-form-label" for="nomDestinatario">Nombre del destinatario:</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-user"></i>
                 </span>
+                </div>
+                <input type="text" class="form-control" formControlName="nomDestinatario" id="nomDestinatario" required
+                       placeholder="Quien recibirá el pedido"
+                       [class.is-invalid]="deliveryForm.get('orders').get('nomDestinatario').invalid && deliveryForm.get('orders').get('nomDestinatario').touched">
               </div>
-              <input type="text" class="form-control" formControlName="nomDestinatario" id="nomDestinatario" required
-                     placeholder="Ingresa el nombre del destinatario"
-                     [class.is-invalid]="deliveryForm.get('orders').get('nomDestinatario').invalid && deliveryForm.get('orders').get('nomDestinatario').touched">
+              <small
+                *ngIf="deliveryForm.get('orders').get('nomDestinatario').errors?.required && deliveryForm.get('orders').get('nomDestinatario').touched"
+                class="text-danger">*Este campo es obligatorio</small>
             </div>
-            <small
-              *ngIf="deliveryForm.get('orders').get('nomDestinatario').errors?.required && deliveryForm.get('orders').get('nomDestinatario').touched"
-              class="text-danger">*Este campo es obligatorio</small>
+
           </div>
 
-        </div>
+          <div class="form-row">
 
-        <div class="form-row">
-
-          <div class="col-md-6">
-            <label class="col-form-label" for="numCel">Número celular del destinatario:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
+            <div class="col-md-6">
+              <label class="col-form-label" for="numCel">Número celular del destinatario:</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-phone"></i>
                 </span>
+                </div>
+                <input type="tel" class="form-control" id="numCel" formControlName="numCel" required minlength="9"
+                       maxlength="9" appPhoneMask
+                       [class.is-invalid]="deliveryForm.get('orders').get('numCel').invalid && deliveryForm.get('orders').get('numCel').touched"
+                       placeholder="Número celular sin espacios">
+
               </div>
-              <input type="tel" class="form-control" id="numCel" formControlName="numCel" required minlength="9"
-                     maxlength="9" appPhoneMask
-                     [class.is-invalid]="deliveryForm.get('orders').get('numCel').invalid && deliveryForm.get('orders').get('numCel').touched"
-                     placeholder="Número celular del destinatario">
+              <small
+                *ngIf="deliveryForm.get('orders').get('numCel').errors?.maxlength && deliveryForm.get('orders').get('numCel').touched"
+                class="text-danger">*Por favor ingresa un número válido</small>
+              <small
+                *ngIf="deliveryForm.get('orders').get('numCel').errors?.minlength && deliveryForm.get('orders').get('numCel').touched"
+                class="text-danger">*Por favor ingresa un número válido</small>
+              <small
+                *ngIf="deliveryForm.get('orders').get('numCel').errors?.required && deliveryForm.get('orders').get('numCel').touched"
+                class="text-danger">*Este campo es obligatorio</small>
 
             </div>
-            <small
-              *ngIf="deliveryForm.get('orders').get('numCel').errors?.maxlength && deliveryForm.get('orders').get('numCel').touched"
-              class="text-danger">*Por favor ingresa un número válido</small>
-            <small
-              *ngIf="deliveryForm.get('orders').get('numCel').errors?.minlength && deliveryForm.get('orders').get('numCel').touched"
-              class="text-danger">*Por favor ingresa un número válido</small>
-            <small
-              *ngIf="deliveryForm.get('orders').get('numCel').errors?.required && deliveryForm.get('orders').get('numCel').touched"
-              class="text-danger">*Este campo es obligatorio</small>
 
-          </div>
-
-          <div class="col-md-6">
-            <label class="col-form-label" for="direccion">Dirección del destinatario:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
+            <div class="col-md-6">
+              <label class="col-form-label" for="direccion">Dirección del destinatario:</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-map-marker-alt"></i>
                 </span>
+                </div>
+                <input type="text" (input)="searchDestination($event)" autocomplete="off"
+                       class="form-control" formControlName="direccion" id="direccion" required
+                       [class.is-invalid]="deliveryForm.get('orders').get('direccion').invalid && deliveryForm.get('orders').get('direccion').touched"
+                       placeholder="Donde entregaremos tu pedido">
               </div>
-              <input type="text" (input)="searchDestination($event)" autocomplete="off"
-                     class="form-control" formControlName="direccion" id="direccion" required
-                     [class.is-invalid]="deliveryForm.get('orders').get('direccion').invalid && deliveryForm.get('orders').get('direccion').touched"
-                     placeholder="Dirección del destinatario">
+
+
+              <div class="suggestions" *ngIf="placesDestination?.length">
+                <p *ngFor="let s of placesDestination" (click)="setDestination(s.text)">{{s.text}}</p>
+              </div>
+              <small> <a href="javascript:void(0)" (click)="gcordsDestination=true">Ingresar Geocordenadas</a> </small>
+              <small
+                *ngIf="deliveryForm.get('orders').get('direccion').errors?.required && deliveryForm.get('orders').get('direccion').touched"
+                class="text-danger">*Este campo es obligatorio</small>
+
+              <div class="input-group" *ngIf="gcordsDestination">
+
+                <input #destinationCords class="form-control" type="text" placeholder=" Ej. 10.1508684, -87.61982">
+
+                <div class="input-group-append">
+                  <button class="btn btn-primary" (click)="setCordsDestination()"> Ok</button>
+                </div>
+              </div>
+              <br>
+              <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" (change)="setCurrentLocationDest($event)"><small>Ubicación
+                  actual</small>
+                </label>
+              </div>
 
             </div>
-            <div class="suggestions" *ngIf="placesDestination?.length">
-              <p *ngFor="let s of placesDestination" (click)="setDestination(s.text)">{{s.text}}</p>
+          </div>
+          <br>
+          <div class="form-row text-center" >
+            <div class="col">
+              <span><i class="fa fa-clock"></i> Tiempo: <span *ngIf="loaders.loadingDistBef" class="spinner-border spinner-border-sm mr-1 "></span> {{befTime}}</span>
             </div>
-            <small
-              *ngIf="deliveryForm.get('orders').get('direccion').errors?.required && deliveryForm.get('orders').get('direccion').touched"
-              class="text-danger">*Este campo es obligatorio</small>
+            <div class="col">
+              <span><i class="fa fa-ruler"></i> Distancia: <span *ngIf="loaders.loadingDistBef" class="spinner-border spinner-border-sm mr-1 "></span> {{befDistance}}</span>
+            </div>
+            <div class="col">
+              <span><i class="fa fa-dollar-sign"></i> Costo: <span *ngIf="loaders.loadingDistBef" class="spinner-border spinner-border-sm mr-1 "></span> L. {{befCost}}</span>
+            </div>
 
           </div>
-        </div>
-        <hr>
-
-        <div class="form-row">
-          <div class="col-md-6">
-            <button type="button" (click)="onOrderAdd()" [disabled]="!this.deliveryForm.get('orders').valid"
-                    class="btn btn-outline-success float-left">Agregar
-              entrega
-            </button>
+          <br>
+          <div class="form-row">
+            <div class="col-md-6">
+              <button type="button" (click)="onOrderAdd()"
+                      [disabled]="!deliveryForm.get('orders').valid || !deliveryForm.get('deliveryHeader').valid || loaders.loadingAdd"
+                      class="btn btn-outline-success float-left">
+                <span *ngIf="loaders.loadingAdd" class="spinner-border spinner-border-sm mr-1 "></span> Agregar entrega
+              </button>
+            </div>
           </div>
+
         </div>
 
-        <!--<div  class="form-row">
-          <button class="btn btn-out">Prepagar</button>
-        </div>-->
-      </div>
 
-      <div *ngIf="agregado" class="alert alert-success" role="alert">
-        Se agregó correctamente
-      </div>
+        <div *ngIf="agregado" class="alert alert-success" role="alert">
+          Se agregó correctamente
+        </div>
 
-      <div *ngIf="prohibitedDistance" class="alert alert-danger" role="alert">
-        {{prohibitedDistanceMsg}}
-      </div>
-      <!--ORDER ADD FORM END-->
-      <hr>
+        <div *ngIf="prohibitedDistance" class="alert alert-danger" role="alert">
+          {{prohibitedDistanceMsg}}
+        </div>
+        <!--ORDER ADD FORM END-->
 
+      </form>
+      <!-- FORM END -->
+    </div>
+    <!--DELIVERY FORM BLOCK END-->
+
+    <!--CARD BLOCK ORDER TABLE START-->
+    <div class="card-block" *ngIf="!loaders.loadingSubmit">
       <!--ORDERS TABLE START-->
-      <div class="form-row mx-auto">
-        <label><strong>Entregas programadas:</strong> </label>
+      <div class="form-row ">
+        <p class="card-title"><strong>Entregas programadas:</strong></p>
       </div>
-      <div class="form-row">
-        <table class="table table-responsive-lg table-striped">
+      <div class="table-responsive">
+        <table class="table table-striped">
           <thead>
           <th scope="col">N°</th>
-          <th scope="col">N° de Factura / Detalle de Envío</th>
+          <th scope="col">Detalle de Envío</th>
           <th scope="col">Nombre del Destinatario</th>
           <th scope="col">Número Celular del Destinatario</th>
           <th scope="col">Dirección del Destinatario</th>
@@ -338,7 +399,8 @@
             <td>{{order.direccion}}</td>
             <td>{{order.distancia}}</td>
             <td>
-              <button type="button" class="btn btn-outline-danger" (click)="removeFromArray(order)"><i class="fa fa-trash-alt"></i>
+              <button type="button" class="btn btn-outline-danger" (click)="removeFromArray(order)"><i
+                class="fa fa-trash-alt"></i>
                 Quitar
               </button>
             </td>
@@ -348,174 +410,251 @@
 
       </div>
       <!--ORDERS TABLE END-->
-      <hr>
-      <!--BILLING START-->
-      <div class="form-row">
-        <div class="col-md-6">
-          <label><strong>Detalles de facturación:</strong> </label>
+    </div>
+    <!--CARD BLOCK ORDER TABLE END-->
+
+    <!--CARD BLOCK PAYMENT OPTION START-->
+    <div class="card-block" *ngIf="orders.length>0 && !loaders.loadingSubmit ">
+      <div class="row">
+        <div class="col">
+          <p class="card-title"><strong>Forma de pago:</strong></p>
+          <hr>
         </div>
       </div>
+      <div class="row">
+        <div class="col">
+          <div class="form-check form-check-inline">
+            <label class="form-check-label">
+              <input class="form-check-input" id="payNow" name="paymentMethod" [(ngModel)]="paymentMethod"
+                     type="radio" [value]="1">
+              <span><i class="fa fa-book"></i> Reservar <span class="badge badge-primary">L. {{pago.total | number: '2.2'}}</span> </span>
+            </label>
+          </div>
 
-      <div class="form-group" formGroupName="billing">
-        <div class="form-row">
-          <div class="col-md-6">
-            <label for="nomTarjeta">Nombre de la tarjeta:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
+          <!--<div class="form-check form-check-inline">
+            <label class="form-check-label">
+              <input class="form-check-input" id="payLater" name="paymentMethod" [(ngModel)]="paymentMethod"
+                     type="radio" [value]="2">
+              <span><i class="fa fa-credit-card"></i> Pagar Ahora <span class="badge badge-primary">L. {{pago.total | number: '2.2' }}</span></span>
+            </label>
+          </div>-->
+        </div>
+        <!--<div class="col" *ngIf="billing.invalid">
+          <button type="button"
+                  [disabled]="this.orders.length == 0 || !deliveryForm.get('deliveryHeader').valid "
+                  class="btn btn-outline-warning" data-toggle="modal"
+                  data-target="#confirmModal">
+            Pagar después
+          </button>
+        </div>
+        <div class="col" *ngIf="billing.invalid">
+          <button type="button" class="btn btn-outline-info" (click)="setPayNow()">Pagar Ahora</button>
+        </div>
+        <div class="col" *ngIf="billing.valid">
+          <button type="button" class="btn btn-outline-info" (click)="doPayment()">Realizar Pago Ahora</button>
+        </div>-->
+      </div>
+    </div>
+    <!--CARD BLOCK PAYMENT OPTION end-->
+
+    <!--CARD BLOCK BILLING START-->
+
+    <div class="card-block" *ngIf="paymentMethod === 2 && orders.length>0 && !loaders.loadingSubmit">
+      <!--BILLING START-->
+      <div class="form-row">
+        <div class="col">
+          <p class="card-title"><strong>Detalles de facturación:</strong></p>
+          <hr>
+        </div>
+      </div>
+      <form [formGroup]="billing">
+        <div class="form-group">
+          <div class="form-row">
+            <div class="col-md-6">
+              <label for="nomTarjeta">Nombre de la tarjeta:</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-id-card"></i>
                 </span>
+                </div>
+                <input type="text" class="form-control" id="nomTarjeta" required
+                       [class.is-invalid]="billing.get('nomTarjeta').invalid && billing.get('nomTarjeta').touched"
+                       placeholder=" Nombre completo de la tarjeta" formControlName="nomTarjeta">
               </div>
-              <input type="text" class="form-control" id="nomTarjeta" required
-                     [class.is-invalid]="deliveryForm.get('billing').get('nomTarjeta').invalid && deliveryForm.get('billing').get('nomTarjeta').touched"
-                     placeholder=" Nombre completo de la tarjeta" formControlName="nomTarjeta">
+              <small
+                *ngIf="billing.get('nomTarjeta').errors?.required && billing.get('nomTarjeta').touched"
+                class="text-danger">*Este campo es obligatorio</small>
             </div>
-            <small
-              *ngIf="deliveryForm.get('billing').get('nomTarjeta').errors?.required && deliveryForm.get('billing').get('nomTarjeta').touched"
-              class="text-danger">*Este campo es obligatorio</small>
-          </div>
 
-          <div class="col-md-6">
-            <label for="numTarjeta">Número de tarjeta:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
+            <div class="col-md-6">
+              <label for="numTarjeta">Número de tarjeta:</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-credit-card"></i>
                 </span>
-              </div>
-              <input type="text" maxlength="19" minlength="19" appCardMask (cardType)="validateCard($event)"
-                     class="form-control" id="numTarjeta" required
-                     [class.is-invalid]="deliveryForm.get('billing').get('numTarjeta').invalid && deliveryForm.get('billing').get('numTarjeta').touched"
-                     placeholder="1234 5678 9012 3456" formControlName="numTarjeta">
+                </div>
+                <input type="text" maxlength="19" minlength="19" appCardMask (cardType)="validateCard($event)"
+                       class="form-control" id="numTarjeta" required
+                       [class.is-invalid]="billing.get('numTarjeta').invalid && billing.get('numTarjeta').touched"
+                       placeholder="1234 5678 9012 3456" formControlName="numTarjeta">
 
-              <div *ngIf="cardSrc!=''" class="input-group-append">
+                <div *ngIf="cardSrc!=''" class="input-group-append">
                 <span class="input-group-text">
                   <i *ngIf="cardSrc=='Visa'" class="fab fa-cc-visa"></i>
                   <i *ngIf="cardSrc=='MC'" class="fab fa-cc-mastercard"></i>
                 </span>
-              </div>
-
-            </div>
-            <small
-              *ngIf="deliveryForm.get('billing').get('numTarjeta').errors?.required && deliveryForm.get('billing').get('numTarjeta').touched"
-              class="text-danger">*Este campo es obligatorio</small>
-            <small
-              *ngIf="deliveryForm.get('billing').get('numTarjeta').errors?.maxlength && deliveryForm.get('billing').get('numTarjeta').touched"
-              class="text-danger">*Número de tarjeta no válido</small>
-            <small
-              *ngIf="deliveryForm.get('billing').get('numTarjeta').errors?.minlength && deliveryForm.get('billing').get('numTarjeta').touched"
-              class="text-danger">*Número de tarjeta no válido</small>
-          </div>
-        </div>
-
-        <div class="form-row">
-
-          <div class="form-group col-md-6">
-            <label for="fechaVencimiento">Fecha de vencimiento:</label>
-            <div class="row">
-
-              <div class="input-group col">
-                <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <i class="fa fa-calendar-alt"></i>
-                </span>
                 </div>
-                <select type="text" class="form-control" id="mesVencimiento" required
-                        [class.is-invalid]="deliveryForm.get('billing').get('mesVencimiento').invalid && deliveryForm.get('billing').get('mesVencimiento').touched"
-                        formControlName="mesVencimiento" [value]="null">
-                  <option value="{{null}}">Mes</option>
-                  <option *ngFor="let expmonth of expmonths" value="{{expmonth}}">{{expmonth}}</option>
-                </select>
-                <small
-                  *ngIf="deliveryForm.get('billing').get('mesVencimiento').errors?.required && deliveryForm.get('billing').get('mesVencimiento').touched"
-                  class="text-danger">*Este campo es obligatorio</small>
-              </div>
 
-              <div class="input-group col">
-                <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <i class="fa fa-calendar-alt"></i>
-                </span>
-                </div>
-                <select type="text" class="form-control" id="anioVencimiento" required
-                        [class.is-invalid]="deliveryForm.get('billing').get('anioVencimiento').invalid && deliveryForm.get('billing').get('anioVencimiento').touched"
-                        formControlName="anioVencimiento" [value]="null">
-                  <option value="{{null}}">Año</option>
-                  <option *ngFor="let expyear of expYears" value="20{{expyear}}">{{expyear}}</option>
-                </select>
-                <small
-                  *ngIf="deliveryForm.get('billing').get('anioVencimiento').errors?.required && deliveryForm.get('billing').get('anioVencimiento').touched"
-                  class="text-danger">*Este campo es obligatorio</small>
               </div>
+              <small
+                *ngIf="billing.get('numTarjeta').errors?.required && billing.get('numTarjeta').touched"
+                class="text-danger">*Este campo es obligatorio</small>
+              <small
+                *ngIf="billing.get('numTarjeta').errors?.maxlength && billing.get('numTarjeta').touched"
+                class="text-danger">*Número de tarjeta no válido</small>
+              <small
+                *ngIf="billing.get('numTarjeta').errors?.minlength && billing.get('numTarjeta').touched"
+                class="text-danger">*Número de tarjeta no válido</small>
             </div>
           </div>
 
-          <div class="col-md-6">
-            <label for="codSeg">Código de seguridad:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
+          <div class="form-row">
+
+            <div class="form-group col-md-6">
+              <label>Fecha de vencimiento:</label>
+              <div class="row">
+
+                <div class="input-group col">
+                  <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-calendar-alt"></i>
+                </span>
+                  </div>
+                  <select type="text" class="form-control" id="mesVencimiento" required
+                          [class.is-invalid]="billing.get('mesVencimiento').invalid && billing.get('mesVencimiento').touched"
+                          formControlName="mesVencimiento" [value]="null">
+                    <option value="{{null}}">Mes</option>
+                    <option *ngFor="let expmonth of expmonths" value="{{expmonth}}">{{expmonth}}</option>
+                  </select>
+                  <small
+                    *ngIf="billing.get('mesVencimiento').errors?.required && billing.get('mesVencimiento').touched"
+                    class="text-danger">*Este campo es obligatorio</small>
+                </div>
+
+                <div class="input-group col">
+                  <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-calendar-alt"></i>
+                </span>
+                  </div>
+                  <select type="text" class="form-control" id="anioVencimiento" required
+                          [class.is-invalid]="billing.get('anioVencimiento').invalid && billing.get('anioVencimiento').touched"
+                          formControlName="anioVencimiento" [value]="null">
+                    <option value="{{null}}">Año</option>
+                    <option *ngFor="let expyear of expYears" value="20{{expyear}}">{{expyear}}</option>
+                  </select>
+                  <small
+                    *ngIf="billing.get('anioVencimiento').errors?.required && billing.get('anioVencimiento').touched"
+                    class="text-danger">*Este campo es obligatorio</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="codSeg">Código de seguridad:</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-lock"></i>
                 </span>
+                </div>
+                <input type="text" maxlength="4" class="form-control" id="codSeg" required
+                       [class.is-invalid]="billing.get('codSeg').invalid && billing.get('codSeg').touched"
+                       placeholder="XXX" formControlName="codSeg">
               </div>
-              <input type="text" maxlength="4" class="form-control" id="codSeg" required
-                     [class.is-invalid]="deliveryForm.get('billing').get('codSeg').invalid && deliveryForm.get('billing').get('codSeg').touched"
-                     placeholder="XXX" formControlName="codSeg">
+              <small
+                *ngIf="billing.get('codSeg').errors?.required && billing.get('codSeg').touched"
+                class="text-danger">*Este campo es obligatorio</small>
             </div>
-            <small
-              *ngIf="deliveryForm.get('billing').get('codSeg').errors?.required && deliveryForm.get('billing').get('codSeg').touched"
-              class="text-danger">*Este campo es obligatorio</small>
+          </div>
+
+          <div class="form-row">
+            <div class="col-md-12">
+              <label for="tBase">Monto a pagar:</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-money-bill"></i>
+                </span>
+                </div>
+                <input type="text" class="form-control" id="tBase" readonly [value]="'Tarifa base: L. '+ pago.baseRate">
+              </div>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-money-bill"></i>
+                </span>
+                </div>
+                <input type="text" class="form-control" id="recargos" readonly [value]="'Recargos: L. '+ pago.recargos">
+              </div>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-money-bill"></i>
+                </span>
+                </div>
+                <input type="text" class="form-control" id="total" readonly [value]="'Total: L. '+ pago.total">
+              </div>
+
+            </div>
           </div>
         </div>
+        <!--BILLING END-->
+      </form>
 
-        <div class="form-row">
-          <div class="col-md-12">
-            <label for="tBase">Monto a pagar:</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <i class="fa fa-money-bill"></i>
-                </span>
-              </div>
-              <input type="text" class="form-control" id="tBase" readonly [value]="'Tarifa base: L. '+baseRate">
-            </div>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <i class="fa fa-money-bill"></i>
-                </span>
-              </div>
-              <input type="text" class="form-control" id="recargos" readonly [value]="'Recargos: L. '+ recargos">
-            </div>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <i class="fa fa-money-bill"></i>
-                </span>
-              </div>
-              <input type="text" class="form-control" id="total" readonly [value]="'Total: L. '+ total">
-            </div>
-
-          </div>
-        </div>
-      </div>
-      <!--BILLING END-->
+    </div>
+    <!--CARD BLOCK BILLING end-->
 
 
-      <div class="form-row">
+
+      <!--<div class="col" *ngIf="billing.invalid">
         <button type="button"
-                [disabled]="this.orders.length == 0 || !deliveryForm.get('deliveryHeader').valid || !deliveryForm.get('billing').valid"
-                class="btn btn-outline-primary" data-toggle="modal"
-                data-target="#confirmModal">Finalizar
-          orden
+                [disabled]="this.orders.length == 0 || !deliveryForm.get('deliveryHeader').valid "
+                class="btn btn-outline-warning" data-toggle="modal"
+                data-target="#confirmModal">
+          Pagar después
         </button>
       </div>
-    </form>
+      <div class="col" *ngIf="billing.invalid">
+        <button type="button" class="btn btn-outline-info" (click)="setPayNow()">Pagar Ahora</button>
+      </div>
+      <div class="col" *ngIf="billing.valid">
+        <button type="button" class="btn btn-outline-info" (click)="doPayment()">Realizar Pago Ahora</button>
+      </div>-->
+
+  </div>
+
+  <div class="card-footer" *ngIf="!loaders.loadingSubmit">
+    <button type="button" *ngIf="paymentMethod == 1 && orders.length>0"
+            [disabled]="this.orders.length == 0 || !deliveryForm.get('deliveryHeader').valid"
+            class="btn btn-outline-primary" data-toggle="modal"
+            data-target="#confirmModal">
+      Registrar Reservación
+    </button>
+    <button type="button" *ngIf="paymentMethod == 2 && orders.length>0"
+            disabled
+            class="btn btn-outline-primary" >
+      Registrar Reservación
+    </button>
   </div>
 
   <button id="showSuccsModal" type="button" data-toggle="modal" data-target="#succsModal" hidden></button>
   <button id="showErrModal" type="button" data-toggle="modal" data-target="#errModal" hidden></button>
 </div>
+<!-- CARD END -->
+
 
 <!-- INICIO DE MODAL -->
 <div id="succsModal" class="modal" tabindex="-1" role="dialog">
@@ -529,7 +668,8 @@
         <p><strong>Tu número de solicitud es: N° {{nDeliveryResponse}}</strong></p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Aceptar</button>
+        <button type="button" (click)="reloadData()" class="btn btn-outline-primary" data-dismiss="modal">Aceptar
+        </button>
       </div>
     </div>
   </div>

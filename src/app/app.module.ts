@@ -8,6 +8,7 @@ import { HttpClientModule } from '@angular/common/http'
 import {FormsModule, ReactiveFormsModule} from '@angular/forms'
 import { PhoneMaskDirective } from './phone-mask.directive';
 import { CardMaskDirective } from './card-mask.directive'
+import {AgmCoreModule} from "@agm/core";
 
 
 @NgModule({
@@ -26,6 +27,10 @@ import { CardMaskDirective } from './card-mask.directive'
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyD0QIqVa1DFFvD8dcYyvHmHRx71bBc09U0',
+      libraries: ['geometry']
+    })
 
   ],
   providers: [],

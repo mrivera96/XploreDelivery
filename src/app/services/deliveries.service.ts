@@ -9,7 +9,7 @@ export class DeliveriesService {
 
   constructor(private http: HttpClient) { }
 
-    newDelivery(deliveryForm, orders) {
-    return this.http.post<Response>(`${environment.apiEndPoint}`, {'function': 'insertDelivery', deliveryForm, orders});
+    newDelivery(deliveryForm, orders, pago) {
+    return this.http.post<Response>(`${environment.apiEndPoint}`, {'function': 'insertDelivery', deliveryForm, orders, 'pago': pago});
   }
 }

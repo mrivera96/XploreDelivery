@@ -28,7 +28,7 @@ export class PhoneMaskDirective {
     }*/
     if (newVal?.length === 0) {
       newVal = '';
-    } else if (newVal.length > 4) {
+    } else if (newVal?.length > 4) {
       newVal = newVal.replace(/^(\d{0,4})(\d{0,4})/, '$1-$2');
     }
     this.ngControl.valueAccessor.writeValue(newVal);

@@ -1,7 +1,8 @@
-import {Component, Input, OnInit, Output} from '@angular/core'
+/// <reference types="@types/googlemaps" />
+import {Component, ElementRef, Input, OnInit, Output, ViewChild} from '@angular/core'
 import {CategoriesService} from 'src/app/services/categories.service'
 import {Category} from 'src/app/models/category'
-import {FormBuilder, FormGroup, Validators} from '@angular/forms'
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms'
 import {Order} from 'src/app/models/order'
 import {formatDate} from '@angular/common'
 import {DeliveriesService} from 'src/app/services/deliveries.service'
@@ -9,6 +10,7 @@ import {RatesService} from "../../services/rates.service";
 import {Rate} from "../../models/rate";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
+
 
 declare var $: any
 
@@ -19,17 +21,27 @@ declare var $: any
 })
 export class HomeComponent implements OnInit {
 
+  loaders = {
+    'loadingAdd' : false,
+    'loadingPay': false,
+    'loadingSubmit': false,
+    'loadingDistBef': false
+  }
+  befDistance = 0
+  befTime = 0
+  befCost = 0.00
+
   categories: Category[]
   deliveryForm: FormGroup
-  loading = false
   orders: Order[] = []
   currOrder: Order
   agregado = false
   exitMsg = ''
   nDeliveryResponse
-  errMsg = ''
   rates: Rate[] = []
-  baseRate: number = 0.00
+  @ViewChild('originCords') originCords: ElementRef
+  @ViewChild('destinationCords') destinationCords: ElementRef
+
   expmonths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   expYears = [20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
     30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
@@ -39,15 +51,19 @@ export class HomeComponent implements OnInit {
   placesOrigin = []
   placesDestination = []
   pago = {
-    'tarifaBase': null,
-    'recargos': null,
-    'total': null,
+    'baseRate':  0.00,
+    'recargos' : 0.00,
+    'total' : 0.00,
   }
-  recargos = 0.00
-  total = 0.00
+
   pagos = []
   prohibitedDistance = false
   prohibitedDistanceMsg = ''
+  payNow = false
+  paymentMethod: number = 1
+  billing: FormGroup
+  gcordsOrigin = false
+  gcordsDestination = false
 
 
   constructor(
@@ -57,7 +73,6 @@ export class HomeComponent implements OnInit {
     private ratesService: RatesService,
     private http: HttpClient
   ) {
-
   }
 
   ngOnInit(): void {
@@ -70,14 +85,7 @@ export class HomeComponent implements OnInit {
         hora: [formatDate(new Date(), 'HH:mm', 'en'), Validators.required],
         dirRecogida: ['', Validators.required],
         email: ['', [Validators.required, Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$")]],
-        idCategoria: [null, Validators.required],
-      }),
-      billing: this.formBuilder.group({
-        nomTarjeta: ['', Validators.required],
-        numTarjeta: ['', [Validators.required, Validators.maxLength(19), Validators.minLength(19)]],
-        mesVencimiento: ['', Validators.required],
-        anioVencimiento: ['', Validators.required],
-        codSeg: ['', Validators.required]
+        idCategoria: [1, Validators.required],
       }),
 
       orders: this.formBuilder.group({
@@ -89,14 +97,23 @@ export class HomeComponent implements OnInit {
       })
     });
 
+    this.billing = this.formBuilder.group({
+      nomTarjeta: ['', Validators.required],
+      numTarjeta: ['', [Validators.required, Validators.maxLength(19), Validators.minLength(19)]],
+      mesVencimiento: ['', Validators.required],
+      anioVencimiento: ['', Validators.required],
+      codSeg: ['', Validators.required]
+    })
+
+    this.paymentMethod = 1
+
+
     this.loadData()
   }
 
   loadData() {
     this.categoriesSService.getAllCategories().subscribe(response => {
         this.categories = response.data
-      },
-      error => {
       })
 
     this.ratesService.getRates().subscribe(response => {
@@ -107,59 +124,110 @@ export class HomeComponent implements OnInit {
   onOrderAdd() {
 
     if (this.deliveryForm.get('orders').valid) {
-
+      this.loaders.loadingAdd = true
       this.currOrder = {
         nFactura: this.deliveryForm.get('orders').get('nFactura').value,
         nomDestinatario: this.deliveryForm.get('orders').get('nomDestinatario').value,
         numCel: this.deliveryForm.get('orders').get('numCel').value,
         direccion: this.deliveryForm.get('orders').get('direccion').value,
       }
+
+      this.deliveryForm.get('deliveryHeader').get('idCategoria').disable({onlySelf: true})
+      this.deliveryForm.get('deliveryHeader').get('dirRecogida').disable({onlySelf: true})
       let ordersCount = this.orders.length + 1
       //
       this.calculateRate(ordersCount)
 
       this.calculateDistance()
 
+      this.befDistance = 0
+      this.befTime = 0
+      this.befCost = 0.00
     }
   }
 
   onFormSubmit() {
     if (this.deliveryForm.get('deliveryHeader').valid && this.orders.length > 0) {
-      this.loading = true;
-      this.deliveriesService.newDelivery(this.deliveryForm.get('deliveryHeader').value, this.orders).subscribe(response => {
+      this.loaders.loadingSubmit = true;
+      this.deliveriesService.newDelivery(this.deliveryForm.get('deliveryHeader').value, this.orders, this.pago).subscribe(response => {
           if (response.error == 0) {
             this.deliveryForm.reset()
+            this.billing.reset()
             this.orders = []
-            this.loading = false
+            this.pagos = []
+
+            this.loaders = {
+              'loadingAdd' : false,
+              'loadingPay': false,
+              'loadingSubmit': false,
+              'loadingDistBef': false
+            }
+
+            this.categories = []
+
+            this.agregado = false
+            this.exitMsg = ''
+            this.nDeliveryResponse =
+            this.rates = []
+
+            this.cardSrc = ''
+            this.placesOrigin = []
+            this.placesDestination = []
+            this.pago = {
+              'baseRate':  0.00,
+              'recargos' : 0.00,
+              'total' : 0.00,
+            }
+
+            this.prohibitedDistance = false
+            this.prohibitedDistanceMsg = ''
+            this.payNow = false
+
+            this.loaders.loadingSubmit = false
 
             this.exitMsg = response.message
             this.nDeliveryResponse = response.nDelivery
             const showModal: HTMLElement = document.getElementById('showSuccsModal') as HTMLElement
             showModal.click()
-          } else {
-            this.loading = false
+          } else if(response.error == 1){
+            this.loaders.loadingSubmit = false
             //this.deliveryForm.reset();
             //this.orders=[];
             const showModal: HTMLElement = document.getElementById('showErrModal') as HTMLElement
             showModal.click()
           }
 
-        },
-        error => {
-          this.loading = false
-          //this.deliveryForm.reset();
-          //this.orders=[];
-          const showModal: HTMLElement = document.getElementById('showErrModal') as HTMLElement
-          showModal.click()
         });
-
     }
 
   }
 
+  calculatedistanceBefore(){
+    this.loaders.loadingDistBef = true
+    let ordersCount = this.orders.length + 1
+    //
+    this.calculateRate(ordersCount)
+
+    this.http.post<any>(`${environment.apiEndPoint}`, {
+      function: 'calculateDistance',
+      salida: this.deliveryForm.get('deliveryHeader').get('dirRecogida').value,
+      entrega: this.deliveryForm.get('orders').get('direccion').value,
+      tarifa: this.pago.baseRate
+    }).subscribe((response) => {
+
+      if (response.codError == '0') {
+        this.loaders.loadingDistBef = false
+        this.befDistance = response.distancia
+        this.befTime = response.tiempo
+        this.befCost = response.total
+      }else{
+        this.loaders.loadingDistBef = false
+      }
+    })
+  }
+
   searchOrigin(event) {
     let lugar = event.target.value
-
     this.http.post<any>(`${environment.apiEndPoint}`, {lugar: lugar, function: 'searchPlace'}).subscribe(response => {
       this.placesOrigin = response
     })
@@ -169,6 +237,7 @@ export class HomeComponent implements OnInit {
     let lugar = event.target.value
     this.http.post<any>(`${environment.apiEndPoint}`, {lugar: lugar, function: 'searchPlace'}).subscribe(response => {
       this.placesDestination = response
+
     })
   }
 
@@ -177,10 +246,10 @@ export class HomeComponent implements OnInit {
       if (ordersCount >= value.entregasMinimas
         && ordersCount <= value.entregasMaximas
         && this.deliveryForm.get('deliveryHeader').get('idCategoria').value == value.idCategoria) {
-        this.baseRate = value.precio
+        this.pago.baseRate = value.precio
 
       } else if (ordersCount == 0) {
-        this.baseRate = 0.00
+        this.pago.baseRate = 0.00
       }
     })
   }
@@ -188,7 +257,7 @@ export class HomeComponent implements OnInit {
   calculateDistance() {
     const salida = this.deliveryForm.get('deliveryHeader').get('dirRecogida').value
     const entrega = this.deliveryForm.get('orders').get('direccion').value
-    const tarifa = this.baseRate
+    const tarifa = this.pago.baseRate
 
 
     this.http.post<any>(`${environment.apiEndPoint}`, {
@@ -201,22 +270,25 @@ export class HomeComponent implements OnInit {
       if (response.codError == '0') {
         this.currOrder.distancia = response.distancia
         let pago = {
-          'tarifaBase': response.tarifa,
-          'recargos' : response.recargo,
-          'total' : response.total
+          'tarifaBase': +response.tarifa,
+          'recargos': +response.recargo,
+          'total': +response.total
         }
 
         this.deliveryForm.get('orders').reset()
         this.orders.push(this.currOrder)
         this.pagos.push(pago)
+        this.loaders.loadingAdd = false
+
 
         this.agregado = true
         setTimeout(() => {
           this.agregado = false;
         }, 2000)
-      } else if(response.codError == '1') {
+      } else if (response.codError == '1') {
         this.prohibitedDistanceMsg = response.msgError
         this.prohibitedDistance = true
+        this.loaders.loadingAdd = false
         setTimeout(() => {
           this.prohibitedDistance = false;
         }, 2000)
@@ -241,27 +313,84 @@ export class HomeComponent implements OnInit {
     this.placesOrigin = []
   }
 
-  calculatePayment(){
-    console.log(this.pagos)
-    this.recargos = this.pagos.reduce( function(a, b){
+  calculatePayment() {
+    this.pago.recargos = this.pagos.reduce(function (a, b) {
       return +a + +b['recargos'];
     }, 0)
 
-    this.total = Number(this.baseRate) + Number(this.recargos)
+    this.pago.total = Number(this.pago.baseRate) + Number(this.pago.recargos)
   }
 
   setDestination(destination) {
     this.deliveryForm.get('orders').get('direccion').setValue(destination)
     this.placesDestination = []
+    this.calculatedistanceBefore()
   }
-
 
   removeFromArray(item) {
     let i = this.orders.indexOf(item)
     this.orders.splice(i, 1)
+    this.pagos.splice(i,1)
     this.calculateRate(this.orders.length)
     this.calculatePayment()
   }
 
+  doPayment(){
+
+  }
+
+  reloadData(){
+    this.ngOnInit()
+  }
+
+  setCurrentLocationOrg(event){
+    if(event.target.checked == true){
+      if(navigator){
+        navigator.geolocation.getCurrentPosition( pos => {
+          this.deliveryForm.get('deliveryHeader').get('dirRecogida').setValue(Number(pos.coords.latitude) + ','+ Number(pos.coords.longitude))
+          if(this.deliveryForm.get('orders').get('direccion').value != ''){
+            this.calculatedistanceBefore()
+          }
+        });
+      }else{
+        alert('Por favor activa la ubicación para esta función')
+      }
+    }else{
+      this.deliveryForm.get('deliveryHeader').get('dirRecogida').setValue('')
+    }
+
+  }
+
+  setCurrentLocationDest(event){
+    if(event.target.checked == true){
+      if(navigator){
+        navigator.geolocation.getCurrentPosition( pos => {
+          this.deliveryForm.get('orders').get('direccion').setValue(Number(pos.coords.latitude) + ','+ Number(pos.coords.longitude))
+          this.calculatedistanceBefore()
+        });
+      }else{
+        alert('Por favor activa la ubicación para esta función')
+      }
+    }else{
+      this.deliveryForm.get('orders').get('direccion').setValue('')
+    }
+
+  }
+
+  setCordsOrigin(){
+    this.deliveryForm.get('deliveryHeader').get('dirRecogida').setValue(this.originCords.nativeElement.value)
+    this.gcordsOrigin = false
+
+    if(this.deliveryForm.get('orders').get('direccion').value != ''){
+      this.calculatedistanceBefore()
+    }
+
+  }
+
+  setCordsDestination(){
+    this.deliveryForm.get('orders').get('direccion').setValue(this.destinationCords.nativeElement.value)
+    this.gcordsDestination = false
+    this.calculatedistanceBefore()
+  }
 
 }
