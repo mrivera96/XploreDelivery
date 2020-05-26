@@ -24,13 +24,13 @@
 }
 
 body{
-  font-size: 14px;
+  font-size: 14px !important;
   background-color: #e6eaec !important;
 }
 
 .form-control{
 height: 37px !important;
-  font-size: 1rem !important;
+  font-size: 14px !important;
   padding: 4px 12px !important;
 }
 
@@ -41,4 +41,8 @@ input[type=radio]:checked+.form-check-label::after{
 
 .form-check.form-check-label input[type=radio]:checked+label{
   background-color: darkcyan !important;
+}
+
+#main{
+  margin-top: 100px;
 }
